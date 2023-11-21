@@ -15,7 +15,7 @@ More can be built out here as per the original specs of the test listed below:
 For this task, we want you to build a timeline out of events. These timeline ‘events’ represent actions that will trigger web motion in a web app you’ll build at a later step. We are calling the succession of events a timeline.
 
 - Given the file located here: 
-https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_ 10s_10MB.mp4, create a web page containing a video web player playing the file mentioned above.
+https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_10MB.mp4, create a web page containing a video web player playing the file mentioned above.
 - Given the list of events here below, create an object representation of the array
 
 | ID          | startTime (HH:MM:SS:FF) | endTime (HH:MM:SS:FF) | captionType | captionData                        |
@@ -39,7 +39,7 @@ For this task, you will create a web app with the modern javascript framework of
 Bottom-left; line 1 and 2 on top of each other
 - logo
 Here you will display the BBC logo. It can be found here: 
-https://static.files.bbci.co.uk/orbit/8161b75793cc3c38d814e1a4a19a2f6a/img/blq-orbi t-blocks_grey.svg
+https://static.files.bbci.co.uk/orbit/8161b75793cc3c38d814e1a4a19a2f6a/img/blq-orbit-blocks_grey.svg
 - title
 Middle-left; bigger text
 -  The three elements will have the functionality of being turned (displayed) on or off programmatically.
