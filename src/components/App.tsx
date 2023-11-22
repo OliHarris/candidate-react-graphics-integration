@@ -33,7 +33,7 @@ const App = () => {
         line1: string | null;
         line2: string | null;
         text: string | null;
-      }[];
+      };
     }[]
   >(
     () => [
@@ -41,85 +41,73 @@ const App = () => {
         startTime: 1.0,
         endTime: 10.0,
         captionType: "logo",
-        captionData: [
-          {
-            action: "on",
-            location: "top left",
-            line1: null,
-            line2: null,
-            text: null,
-          },
-        ],
+        captionData: {
+          action: "on",
+          location: "top left",
+          line1: null,
+          line2: null,
+          text: null,
+        },
       },
       {
         startTime: 2.0,
         endTime: 3.2,
         captionType: "nameSuper",
-        captionData: [
-          {
-            action: null,
-            location: null,
-            line1: "a rabbit hole",
-            line2: null,
-            text: null,
-          },
-        ],
+        captionData: {
+          action: null,
+          location: null,
+          line1: "a rabbit hole",
+          line2: null,
+          text: null,
+        },
       },
       {
         startTime: 4.0,
         endTime: 5.1,
         captionType: "nameSuper",
-        captionData: [
-          {
-            action: null,
-            location: null,
-            line1: "a tree",
-            line2: "(a big one)",
-            text: null,
-          },
-        ],
+        captionData: {
+          action: null,
+          location: null,
+          line1: "a tree",
+          line2: "(a big one)",
+          text: null,
+        },
       },
       {
         startTime: 6.0,
         endTime: 6.2,
         captionType: "nameSuper",
-        captionData: [
-          {
-            action: null,
-            location: null,
-            line1: "some rocks",
-            line2: null,
-            text: null,
-          },
-        ],
+        captionData: {
+          action: null,
+          location: null,
+          line1: "some rocks",
+          line2: null,
+          text: null,
+        },
       },
       {
         startTime: 7.0,
         endTime: 8.14,
         captionType: "nameSuper",
-        captionData: [
-          {
-            action: null,
-            location: null,
-            line1: "some grass",
-            line2: null,
-            text: null,
-          },
-        ],
+        captionData: {
+          action: null,
+          location: null,
+          line1: "some grass",
+          line2: null,
+          text: null,
+        },
       },
       {
         startTime: 9.0,
         endTime: 10.0,
         captionType: "title",
-        captionData: [
-          {
-            action: null,
-            location: null,
-            line1: null,
-            line2: null,
-            text: "the end",
-          },
-        ],
+        captionData: {
+          action: null,
+          location: null,
+          line1: null,
+          line2: null,
+          text: "the end",
+        },
       },
     ],
     []
@@ -291,24 +279,24 @@ const App = () => {
         break;
       case "nameSuper1":
         timelineObject = timelineArray.find(
-          (obj) => obj.captionData[0].line1 === "a rabbit hole"
+          (obj) => obj.captionData.line1 === "a rabbit hole"
         );
         break;
       case "nameSuper2":
         timelineObject = timelineArray.find(
           (obj) =>
-            obj.captionData[0].line1 === "a tree" &&
-            obj.captionData[0].line2 === "(a big one)"
+            obj.captionData.line1 === "a tree" &&
+            obj.captionData.line2 === "(a big one)"
         );
         break;
       case "nameSuper3":
         timelineObject = timelineArray.find(
-          (obj) => obj.captionData[0].line1 === "some rocks"
+          (obj) => obj.captionData.line1 === "some rocks"
         );
         break;
       case "nameSuper4":
         timelineObject = timelineArray.find(
-          (obj) => obj.captionData[0].line1 === "some grass"
+          (obj) => obj.captionData.line1 === "some grass"
         );
         break;
       case "title":
@@ -338,12 +326,12 @@ const App = () => {
       line1: string | null;
       line2: string | null;
       text: string | null;
-    }[];
+    };
   }) => {
     return (
       <div id="name-super-display">
-        <div>{nameSuper && nameSuper.captionData[0].line1}</div>
-        <div>{nameSuper && nameSuper.captionData[0].line2}</div>
+        <div>{nameSuper && nameSuper.captionData.line1}</div>
+        <div>{nameSuper && nameSuper.captionData.line2}</div>
       </div>
     );
   };
@@ -384,7 +372,7 @@ const App = () => {
         video &&
         video.currentTime <= getTimelineNumber("title", "endTime") && (
           <div id="title-display">
-            {findTimelineObject("title")!.captionData[0].text}
+            {findTimelineObject("title")!.captionData.text}
           </div>
         )}
 
