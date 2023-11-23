@@ -1,4 +1,5 @@
 import { MutableRefObject } from "react";
+import bunnyVideo from "../assets/video/Big_Buck_Bunny_1080_10s_10MB.mp4";
 
 interface VideoInterface {
   videoContainerRef: MutableRefObject<HTMLVideoElement | null>;
@@ -11,7 +12,7 @@ const Video = ({ videoContainerRef, playToggle }: VideoInterface) => {
       id="video"
       ref={videoContainerRef}
       onClick={() => playToggle()}
-      src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_10MB.mp4"
+      src={bunnyVideo}
     ></video>
   );
 };
