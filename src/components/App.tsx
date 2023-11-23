@@ -1,9 +1,8 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-
-import bbcLogo from "../assets/images/blq-orbit-blocks_grey.svg";
+import DisplaySlides from "./DisplaySlides";
+import Video from "./Video";
+import Controls from "./Controls";
 
 // For this test, to save time I used this code as an initial springboard for the JS and CSS:
 // https://blog.logrocket.com/creating-customizing-html5-video-player-css/
@@ -11,7 +10,6 @@ import bbcLogo from "../assets/images/blq-orbit-blocks_grey.svg";
 // https://fontawesome.com/v5/docs/web/use-with/react
 
 const App = () => {
-  const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [nextStartTime, setNextStartTime] = useState<number>(0);
   const startTimeArray = useMemo<number[]>(() => [], []);
 
@@ -204,55 +202,47 @@ const App = () => {
   }, [nextMaxStartTime, nextStartTime]);
 
   useEffect(() => {
-    // switch needed to make sure initialise logic only on first load
-    if (firstLoad === true) {
-      setFirstLoad(false);
-      // reference important static elements
-      playIconRef.current = document.querySelector(".fa-play") as HTMLElement;
-      pauseIconRef.current = document.querySelector(".fa-pause") as HTMLElement;
-      barInnerRef.current = document.querySelector(
-        "#timeline .bar .inner"
-      ) as HTMLElement;
+    // reference important static elements
+    playIconRef.current = document.querySelector(".fa-play") as HTMLElement;
+    pauseIconRef.current = document.querySelector(".fa-pause") as HTMLElement;
+    barInnerRef.current = document.querySelector(
+      "#timeline .bar .inner"
+    ) as HTMLElement;
 
-      // startTimeArray is useMemo hook so only one extraction
-      timelineArray.forEach((item) => startTimeArray.push(item.startTime));
-      // obviously does not need sorting but good practice
-      startTimeArray.sort(function (a, b) {
-        return a - b;
+    // startTimeArray is useMemo hook so only one extraction
+    timelineArray.forEach((item) => startTimeArray.push(item.startTime));
+    // obviously does not need sorting but good practice
+    startTimeArray.sort(function (a, b) {
+      return a - b;
+    });
+
+    // initialise
+    showPlayIcon("");
+    setNextStartTime(nextMaxStartTime(0));
+  }, [nextMaxStartTime, startTimeArray, timelineArray]);
+
+  useEffect(() => {
+    // update the progress bar
+    if (videoContainerRef.current) {
+      const video = videoContainerRef.current;
+      // TODO: onTimeUpdate could be own useCallback
+      // to use "window.requestAnimationFrame"
+      video.addEventListener("timeupdate", () => {
+        const barInnerCalc = (video.currentTime / video.duration) * 100;
+        if (barInnerRef.current) {
+          const barInner = barInnerRef.current;
+          barInner.setAttribute("style", `width: ${barInnerCalc}%`);
+        }
+        if (video.ended) {
+          // reset pauseOnTimecode() event listener
+          video.addEventListener("timeupdate", pauseOnTimecode);
+          // TODO: BUG with playing video after has ended (first click only)
+          // consider parsing status to pauseOnTimecode() or
+          // setNextStartTime(0);
+        }
       });
-
-      // initialise
-      showPlayIcon("");
-      setNextStartTime(nextMaxStartTime(0));
-
-      // update the progress bar
-      if (videoContainerRef.current) {
-        const video = videoContainerRef.current;
-        // TODO: onTimeUpdate could be own useCallback
-        // to use "window.requestAnimationFrame"
-        video.addEventListener("timeupdate", () => {
-          const barInnerCalc = (video.currentTime / video.duration) * 100;
-          if (barInnerRef.current) {
-            const barInner = barInnerRef.current;
-            barInner.setAttribute("style", `width: ${barInnerCalc}%`);
-          }
-          if (video.ended) {
-            // reset pauseOnTimecode() event listener
-            video.addEventListener("timeupdate", pauseOnTimecode);
-            // TODO: BUG with playing video after has ended (first click only)
-            // consider parsing status to pauseOnTimecode() or
-            // setNextStartTime(0);
-          }
-        });
-      }
     }
-  }, [
-    firstLoad,
-    timelineArray,
-    startTimeArray,
-    nextMaxStartTime,
-    pauseOnTimecode,
-  ]);
+  }, [pauseOnTimecode]);
 
   // pause or play the video
   const playToggle = () => {
@@ -269,130 +259,15 @@ const App = () => {
     }
   };
 
-  const findTimelineObject = (type: string) => {
-    let timelineObject;
-    switch (type) {
-      case "logo":
-        timelineObject = timelineArray.find(
-          (obj) => obj.captionType === "logo"
-        );
-        break;
-      case "nameSuper1":
-        timelineObject = timelineArray.find(
-          (obj) => obj.captionData.line1 === "a rabbit hole"
-        );
-        break;
-      case "nameSuper2":
-        timelineObject = timelineArray.find(
-          (obj) =>
-            obj.captionData.line1 === "a tree" &&
-            obj.captionData.line2 === "(a big one)"
-        );
-        break;
-      case "nameSuper3":
-        timelineObject = timelineArray.find(
-          (obj) => obj.captionData.line1 === "some rocks"
-        );
-        break;
-      case "nameSuper4":
-        timelineObject = timelineArray.find(
-          (obj) => obj.captionData.line1 === "some grass"
-        );
-        break;
-      case "title":
-        timelineObject = timelineArray.find(
-          (obj) => obj.captionType === "title"
-        );
-        break;
-      default:
-    }
-    return timelineObject;
-  };
-
-  const getTimelineNumber = (type: string, property: string) => {
-    const timelineObject = findTimelineObject(type)!;
-    return timelineObject[property as keyof typeof timelineObject] as number;
-  };
-
-  const video = videoContainerRef.current;
-
-  const nameSuperMarkup = (nameSuper: {
-    startTime: number;
-    endTime: number;
-    captionType: string;
-    captionData: {
-      action: string | null;
-      location: string | null;
-      line1: string | null;
-      line2: string | null;
-      text: string | null;
-    };
-  }) => {
-    return (
-      <div id="name-super-display">
-        <div>{nameSuper && nameSuper.captionData.line1}</div>
-        <div>{nameSuper && nameSuper.captionData.line2}</div>
-      </div>
-    );
-  };
-
   return (
     <div className="container">
-      {/* display if nextStartTime greater than startTime value */}
-      {/* display if video.currentTime less than or equal to endTime value */}
-      {nextStartTime > getTimelineNumber("logo", "startTime") &&
-        video &&
-        video.currentTime <= getTimelineNumber("logo", "endTime") && (
-          <figure id="bbc-logo">
-            <img className="svg" src={bbcLogo} alt="BBC logo" />
-          </figure>
-        )}
-
-      {nextStartTime > getTimelineNumber("nameSuper1", "startTime") &&
-        video &&
-        video.currentTime <= getTimelineNumber("nameSuper1", "endTime") &&
-        nameSuperMarkup(findTimelineObject("nameSuper1")!)}
-
-      {nextStartTime > getTimelineNumber("nameSuper2", "startTime") &&
-        video &&
-        video.currentTime <= getTimelineNumber("nameSuper2", "endTime") &&
-        nameSuperMarkup(findTimelineObject("nameSuper2")!)}
-
-      {nextStartTime > getTimelineNumber("nameSuper3", "startTime") &&
-        video &&
-        video.currentTime <= getTimelineNumber("nameSuper3", "endTime") &&
-        nameSuperMarkup(findTimelineObject("nameSuper3")!)}
-
-      {nextStartTime > getTimelineNumber("nameSuper4", "startTime") &&
-        video &&
-        video.currentTime <= getTimelineNumber("nameSuper4", "endTime") &&
-        nameSuperMarkup(findTimelineObject("nameSuper4")!)}
-
-      {nextStartTime > getTimelineNumber("title", "startTime") &&
-        video &&
-        video.currentTime <= getTimelineNumber("title", "endTime") && (
-          <div id="title-display">
-            {findTimelineObject("title")!.captionData.text}
-          </div>
-        )}
-
-      <video
-        id="video"
-        ref={videoContainerRef}
-        onClick={() => playToggle()}
-        src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_10MB.mp4"
-      ></video>
-      <section className="controls">
-        <button onClick={() => playToggle()}>
-          <FontAwesomeIcon icon={faPlay} />
-          <FontAwesomeIcon icon={faPause} />
-        </button>
-        <div id="timeline">
-          <div className="bar">
-            <div className="inner"></div>
-          </div>
-        </div>
-      </section>
+      <DisplaySlides
+        timelineArray={timelineArray}
+        videoContainerRef={videoContainerRef}
+        nextStartTime={nextStartTime}
+      />
+      <Video videoContainerRef={videoContainerRef} playToggle={playToggle} />
+      <Controls playToggle={playToggle} />
     </div>
   );
 };
