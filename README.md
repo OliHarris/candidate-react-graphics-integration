@@ -1,4 +1,4 @@
-# Graphics Inregration
+# Graphics Integration
 
 This was originally a test set for BBC, which I have since dropped into a fresh instance of Vite to continue building out.
 
